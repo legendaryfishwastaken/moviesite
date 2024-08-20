@@ -32,7 +32,7 @@ export default {
 
         // Serve static files
         if (pathname === '/' || pathname === '/index.html') {
-            return serveStaticFile('public/index.html');
+            return serveStaticFile('public/index.html', 'text/html');
         } else if (pathname === '/style.css') {
             return serveStaticFile('public/style.css', 'text/css');
         } else if (pathname === '/script.js') {
@@ -43,10 +43,10 @@ export default {
     }
 };
 
-// Function to serve static files
-async function serveStaticFile(path, contentType = 'text/html') {
+// Function to serve static files with the correct Content-Type
+async function serveStaticFile(path, contentType) {
     try {
-        const file = await fetch(`https://your-repo-url/${path}`);
+        const file = await fetch(`https://moviesite-7vq.pages.dev/${path}`);
         return new Response(file.body, {
             headers: { 'Content-Type': contentType },
         });
