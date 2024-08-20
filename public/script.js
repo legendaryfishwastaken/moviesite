@@ -13,19 +13,29 @@ document.getElementById('search-form').addEventListener('submit', async function
     if (data.results.length === 0) {
         results.innerHTML = '<p>No results found.</p>';
     } else {
-        data.results.forEach(movie => {
-            const movieDiv = document.createElement('div');
-            movieDiv.classList.add('movie');
+        data.results.forEach(item => {
+            const itemDiv = document.createElement('div');
+            itemDiv.classList.add('item');
 
-            const img = movie.poster_path ? `<img src="https://image.tmdb.org/t/p/w200${movie.poster_path}" alt="${movie.title}">` : '';
+            const img = item.poster_path ? `<img src="https://image.tmdb.org/t/p/w200${item.poster_path}" alt="${item.title}">` : '';
+            
+            // Determine if the item is a movie or a TV show
+            let link;
+            if (item.media_type === 'movie') {
+                link = `https://autoembed.co/movie/tmdb/${item.id}`;
+            } else if (item.media_type === 'tv') {
+                const seasonNumber = 1; // Replace with actual season number if available
+                const episodeNumber = 1; // Replace with actual episode number if available
+                link = `https://autoembed.co/tv/tmdb/${item.id}-${seasonNumber}-${episodeNumber}`;
+            }
 
-            movieDiv.innerHTML = `
-                ${img}
-                <span class="movie-title">${movie.title}</span>
-                <p>${movie.release_date}</p>
-                <p>${movie.overview}</p>
+            itemDiv.innerHTML = `
+                <a href="${link}" target="_blank" class="item-link">
+                    ${img}
+                    <span class="item-title">${item.title || item.name}</span>
+                </a>
             `;
-            results.appendChild(movieDiv);
+            results.appendChild(itemDiv);
         });
     }
 });
