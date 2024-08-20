@@ -40,4 +40,19 @@ export default {
                     <title>Movie Search</title>
                     <link rel="stylesheet" href="style.css">
                 </head>
-         
+                <body>
+                    <h1>Search for Movies</h1>
+                    <form id="search-form">
+                        <input type="text" id="search-input" placeholder="Enter movie name...">
+                        <button type="submit">Search</button>
+                    </form>
+                    <div id="results"></div>
+                    <script src="script.js"></script>
+                </body>
+                </html>
+            `, {
+                headers: { 'Content-Type': 'text/html' },
+            });
+        }
+    }
+};
