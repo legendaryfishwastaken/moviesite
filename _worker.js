@@ -1,39 +1,58 @@
 export default {
     async fetch(request, env) {
-        // Extract the search query from the request URL
         const url = new URL(request.url);
-        const query = url.searchParams.get('query');
+        const pathname = url.pathname;
 
-        // If no query is provided, return an empty result
-        if (!query) {
-            return new Response(JSON.stringify({ results: [] }), {
-                headers: { 'Content-Type': 'application/json' },
+        if (pathname === '/search') {
+            // Handle the search query
+            const query = url.searchParams.get('query');
+
+            if (!query) {
+                return new Response(JSON.stringify({ results: [] }), {
+                    headers: { 'Content-Type': 'application/json' },
+                });
+            }
+
+            try {
+                const apiKey = env.TMDB_API_KEY;
+                const apiUrl = `https://api.themoviedb.org/3/search/movie?api_key=${apiKey}&query=${encodeURIComponent(query)}`;
+
+                const response = await fetch(apiUrl);
+                const data = await response.json();
+
+                return new Response(JSON.stringify(data), {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Access-Control-Allow-Origin': '*',
+                    },
+                });
+            } catch (error) {
+                return new Response('Error fetching data from TMDB API', { status: 500 });
+            }
+        } else {
+            // Serve the static HTML page
+            return new Response(`
+                <!DOCTYPE html>
+                <html lang="en">
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>Movie Search</title>
+                    <link rel="stylesheet" href="style.css">
+                </head>
+                <body>
+                    <h1>Search for Movies</h1>
+                    <form id="search-form">
+                        <input type="text" id="search-input" placeholder="Enter movie name...">
+                        <button type="submit">Search</button>
+                    </form>
+                    <div id="results"></div>
+                    <script src="script.js"></script>
+                </body>
+                </html>
+            `, {
+                headers: { 'Content-Type': 'text/html' },
             });
-        }
-
-        try {
-            // Fetch data from the TMDB API
-            const apiKey = env.TMDB_API_KEY;
-            const apiUrl = `https://api.themoviedb.org/3/search/movie?api_key=${apiKey}&query=${encodeURIComponent(query)}`;
-
-            const response = await fetch(apiUrl);
-            const data = await response.json();
-
-            // Return the data from the TMDB API
-            return new Response(JSON.stringify(data), {
-                headers: {
-                    'Content-Type': 'application/json',
-                    // Add necessary headers for security and CORS
-                    'Access-Control-Allow-Origin': '*',
-                    'Strict-Transport-Security': 'max-age=31536000; includeSubDomains; preload',
-                    'X-Content-Type-Options': 'nosniff',
-                    'X-Frame-Options': 'DENY',
-                    'X-XSS-Protection': '1; mode=block'
-                },
-            });
-        } catch (error) {
-            // Handle any errors that occur during the fetch
-            return new Response('Error fetching data from TMDB API', { status: 500 });
         }
     }
 };
