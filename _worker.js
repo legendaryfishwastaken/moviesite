@@ -3,10 +3,9 @@ export default {
         const url = new URL(request.url);
         const pathname = url.pathname;
 
+        // Handle the /search endpoint
         if (pathname === '/search') {
-            // Handle the search query
             const query = url.searchParams.get('query');
-
             if (!query) {
                 return new Response(JSON.stringify({ results: [] }), {
                     headers: { 'Content-Type': 'application/json' },
@@ -29,30 +28,29 @@ export default {
             } catch (error) {
                 return new Response('Error fetching data from TMDB API', { status: 500 });
             }
+        }
+
+        // Serve static files
+        if (pathname === '/' || pathname === '/index.html') {
+            return serveStaticFile('public/index.html');
+        } else if (pathname === '/style.css') {
+            return serveStaticFile('public/style.css', 'text/css');
+        } else if (pathname === '/script.js') {
+            return serveStaticFile('public/script.js', 'application/javascript');
         } else {
-            // Serve the static HTML page
-            return new Response(`
-                <!DOCTYPE html>
-                <html lang="en">
-                <head>
-                    <meta charset="UTF-8">
-                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                    <title>Movie Search</title>
-                    <link rel="stylesheet" href="style.css">
-                </head>
-                <body>
-                    <h1>Search for Movies</h1>
-                    <form id="search-form">
-                        <input type="text" id="search-input" placeholder="Enter movie name...">
-                        <button type="submit">Search</button>
-                    </form>
-                    <div id="results"></div>
-                    <script src="script.js"></script>
-                </body>
-                </html>
-            `, {
-                headers: { 'Content-Type': 'text/html' },
-            });
+            return new Response('Not Found', { status: 404 });
         }
     }
 };
+
+// Function to serve static files
+async function serveStaticFile(path, contentType = 'text/html') {
+    try {
+        const file = await fetch(`https://your-repo-url/${path}`);
+        return new Response(file.body, {
+            headers: { 'Content-Type': contentType },
+        });
+    } catch (error) {
+        return new Response('Error serving static file', { status: 500 });
+    }
+}
