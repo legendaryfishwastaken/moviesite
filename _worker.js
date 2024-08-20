@@ -3,6 +3,10 @@ export default {
         const url = new URL(request.url);
         const pathname = url.pathname;
 
+        // Debugging
+        console.log('Request URL:', request.url);
+        console.log('Pathname:', pathname);
+
         // Handle /search requests
         if (pathname.startsWith('/search')) {
             return handleSearch(request, env);
@@ -48,6 +52,7 @@ async function handleSearch(request, env) {
             },
         });
     } catch (error) {
+        console.error('Error fetching data from TMDB API:', error);
         return new Response('Error fetching data from TMDB API', { status: 500 });
     }
 }
@@ -55,7 +60,7 @@ async function handleSearch(request, env) {
 // Function to serve static files with the correct Content-Type
 async function serveStaticFile(path, contentType) {
     try {
-        const file = await fetch(`https://your-project-name.pages.dev/public/${path}`);
+        const file = await fetch(`https://moviesite-7vq.pages.dev/public/${path}`);
         return new Response(file.body, {
             headers: { 'Content-Type': contentType },
         });
