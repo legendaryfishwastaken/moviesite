@@ -1,0 +1,40 @@
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    padding: 20px;
+}
+
+#search-form {
+    margin-bottom: 20px;
+}
+
+#search-input {
+    padding: 10px;
+    width: 300px;
+    font-size: 16px;
+}
+
+button {
+    padding: 10px;
+    font-size: 16px;
+}
+
+#results {
+    margin-top: 20px;
+}
+
+.movie {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.movie img {
+    max-width: 100px;
+    margin-right: 10px;
+    vertical-align: middle;
+}
+
+.movie-title {
+    font-size: 18px;
+    font-weight: bold;
+}
