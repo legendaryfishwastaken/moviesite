@@ -31,7 +31,7 @@ export default {
 
         // Serve static files
         try {
-            return await env.ASSETS.fetch(request);
+            return await env.ASSETS.fetch("/public/" + request);
         } catch (error) {
             return new Response('Not Found', { status: 404 });
         }
