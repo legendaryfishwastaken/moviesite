@@ -4,38 +4,46 @@ document.getElementById('search-form').addEventListener('submit', async function
     const query = document.getElementById('search-input').value;
     if (!query) return;
 
-    const response = await fetch(`/search?query=${encodeURIComponent(query)}`);
-    const data = await response.json();
+    try {
+        const response = await fetch(`/search?query=${encodeURIComponent(query)}`);
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
 
-    const results = document.getElementById('results');
-    results.innerHTML = '';
+        const data = await response.json();
+        const results = document.getElementById('results');
+        results.innerHTML = '';
 
-    if (data.results.length === 0) {
-        results.innerHTML = '<p>No results found.</p>';
-    } else {
-        data.results.forEach(item => {
-            const itemDiv = document.createElement('div');
-            itemDiv.classList.add('item');
+        if (data.results.length === 0) {
+            results.innerHTML = '<p>No results found.</p>';
+        } else {
+            data.results.forEach(item => {
+                const itemDiv = document.createElement('div');
+                itemDiv.classList.add('item');
 
-            const img = item.poster_path ? `<img src="https://image.tmdb.org/t/p/w200${item.poster_path}" alt="${item.title}">` : '';
-            
-            // Determine if the item is a movie or a TV show
-            let link;
-            if (item.media_type === 'movie') {
-                link = `https://autoembed.co/movie/tmdb/${item.id}`;
-            } else if (item.media_type === 'tv') {
-                const seasonNumber = 1; // Replace with actual season number if available
-                const episodeNumber = 1; // Replace with actual episode number if available
-                link = `https://autoembed.co/tv/tmdb/${item.id}-${seasonNumber}-${episodeNumber}`;
-            }
+                const img = item.poster_path ? `<img src="https://image.tmdb.org/t/p/w200${item.poster_path}" alt="${item.title}">` : '';
+                
+                // Determine if the item is a movie or a TV show
+                let link;
+                if (item.media_type === 'movie') {
+                    link = `https://autoembed.co/movie/tmdb/${item.id}`;
+                } else if (item.media_type === 'tv') {
+                    const seasonNumber = 1; // Replace with actual season number if available
+                    const episodeNumber = 1; // Replace with actual episode number if available
+                    link = `https://autoembed.co/tv/tmdb/${item.id}-${seasonNumber}-${episodeNumber}`;
+                }
 
-            itemDiv.innerHTML = `
-                <a href="${link}" target="_blank" class="item-link">
-                    ${img}
-                    <span class="item-title">${item.title || item.name}</span>
-                </a>
-            `;
-            results.appendChild(itemDiv);
-        });
+                itemDiv.innerHTML = `
+                    <a href="${link}" target="_blank" class="item-link">
+                        ${img}
+                        <span class="item-title">${item.title || item.name}</span>
+                    </a>
+                `;
+                results.appendChild(itemDiv);
+            });
+        }
+    } catch (error) {
+        console.error('Error fetching or processing data:', error);
+        document.getElementById('results').innerHTML = '<p>An error occurred while fetching data.</p>';
     }
 });
