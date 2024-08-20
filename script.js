@@ -1,6 +1,9 @@
 document.getElementById('search-form').addEventListener('submit', async function (e) {
-    e.preventDefault();
+    e.preventDefault(); // Prevent the form from submitting normally
+
     const query = document.getElementById('search-input').value;
+    if (!query) return;
+
     const response = await fetch(`/search?query=${encodeURIComponent(query)}`);
     const data = await response.json();
 
